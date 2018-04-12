@@ -37,7 +37,19 @@ CLOUDERA MANAGER OPTIONS:
 
   --cmpassword <arg>
         Cloudera Manager user password.
+
 ```
+***Examples:***
+
+```
+# Start iperf3 tests using a host file
+$ cat hosts
+node01.domain.org
+node02.domain.org
+node03.domain.org
+$ ./launch-test.sh -h hosts -u root
+```
+
 
 ### parse-result.py
 This is a python script that process the JSON result files generated from the launcher script and output the results in a table format. Currently, only HTML format is supported but hopefully more output format will be added later.
@@ -55,10 +67,16 @@ optional arguments:
 ```
 
 ## Pre-requisites
+### Supported Versions:
+The toolkit has only been tested on the following version of the software:
+
+* OS - RHEL 7.3/7.4, CentOS 7.3/7.4
+* iperf version 3.1.7
+
+Other operating systems and iperf3 version may work, but have not been tested.
+
 ### Install iperf3:
 On RHEL 7 or CentOS 7, iperf3 is available in the base repository. Run "yum install iperf3" to install. You have to install iperf3 on all the nodes in the cluster that you intend to run the network bandwidth test on.
-
-Note that these scripts have only been tested on RHEL/CentOS 7.
 
 ### Install RPM Manually:
 Download the RPM from [https://iperf.fr/iperf-download.php]().
