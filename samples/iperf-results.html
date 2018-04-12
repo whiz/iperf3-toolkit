@@ -1,0 +1,181 @@
+<html><head><title>iPerf3 bandwidth test results</title>
+<style>
+table, th, td { border: 1px solid black; }
+th, td {
+    font-size: 12px;
+    width: 40px;
+    text-align: center;
+    padding: 0px;
+    border: 1px solid #e6e6e6;
+    border-width: thin;
+}
+th { background-color: #f2f2f2; }
+td.header {
+	   font-weight: bold;
+    padding: 2px;
+    background-color: #f2f2f2;
+}
+td.legend { width: 160px; }
+td.green  { background-color: #99FF99; }
+td.gray   { background-color: #f2f2f2; }
+td.yellow { background-color: #FFFF99; }
+td.red    { background-color: #FF6666; }
+
+table.result {
+	   border: 2px solid LightGray;
+    border-spacing: 0;
+    table-layout : fixed;
+    padding: 0px;
+    margin-left: 10px;}
+table.legend {
+    border: 2px solid LightGray;
+    border-spacing: 0;
+    padding: 0px;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+body {
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+}
+th.rotate {
+    height: 100px;
+    white-space: nowrap;
+}
+th.rotate > div {
+    transform:
+        translate(20px, 41px)
+        rotate(270deg);
+    width: 0px;
+}
+div.top-banner {
+    margin: 0px;
+    padding: 0px;
+    background-color: #f8f8f8;
+    border-color: #e7e7e7;
+    min-height: 50px;
+    margin-bottom: 0px;
+}
+div.horizontal-bar {
+    margin: 0px;
+    border-top: 1px solid LightGray;
+    border-bottom: 1px solid LightGray;
+    min-height: 10px;
+    background-color: #0078D9;
+}
+div.title-bar {
+margin: 0px;
+margin-bottom: 20px;
+min-height: 50px;
+background-color:  # f2f2f2;
+border-bottom: 1px solid LightGray;
+}
+h1 {
+font-size: 22px;
+font-weight: normal;
+line-height: 48px;
+margin-top: 0;
+margin-bottom: 0;
+margin-left: 20px;
+}
+body {
+margin: 0px;
+padding: 0px;
+}
+</style></head>
+<body>
+<div class="top-banner"><img alt="Cloudera Logo" style="height: 20px; margin-top: 15px; margin-left: 10px" src="data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTc1IDMxLjMiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDE3NSAzMS4zOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4uc3Qwe2ZpbGw6IzAwNTg4NDt9LnN0MXtmaWxsOiMwMDU4ODI7fS5zdDJ7ZmlsbDojMDBBN0UwO308L3N0eWxlPjxnPjxnPjxnPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNzAuMyw2LjljMS41LDAsMi40LDEuMSwyLjQsMi40YzAsMS4zLTEsMi40LTIuNCwyLjRjLTEuNSwwLTIuNC0xLjEtMi40LTIuNEMxNjcuOCw4LDE2OC44LDYuOSwxNzAuMyw2Ljl6TTE3MC4zLDExLjRjMS4yLDAsMi0wLjksMi0yYzAtMS4xLTAuOS0yLjEtMi0yLjFjLTEuMiwwLTIsMC45LTIsMi4xQzE2OC4yLDEwLjUsMTY5LjEsMTEuNCwxNzAuMywxMS40eiBNMTcwLjMsOS43aC0wLjV2MS4xaC0wLjVWOGgxYzAuNywwLDEuMSwwLjIsMS4xLDAuOWMwLDAuNC0wLjEsMC43LTAuNSwwLjhsMC41LDEuMWgtMC42TDE3MC4zLDkuN3ogTTE2OS44LDkuM2gwLjVjMC4zLDAsMC41LTAuMSwwLjUtMC40YzAtMC4zLTAuMi0wLjQtMC42LTAuNGgtMC40VjkuM3oiLz48L2c+PGc+PGc+PHBhdGggY2xhc3M9InN0MSIgZD0iTTE0My40LDdjLTEuNiwwLTMuMiwwLjItNC44LDAuNmMtMC43LDAuMi0xLjQsMC40LTIsMC43Yy0wLjEtMC4yLTAuMy0wLjQtMC40LTAuNUMxMzUuNiw3LjMsMTM0LjgsNywxMzQsN2gtMy4zdjIzLjdoNi40VjE4LjRjMC0yLjQsMC40LTMuMywxLjMtNC4yYzAuOC0wLjgsMi4xLTEuMiwzLjktMS4yaDIuN1Y3SDE0My40Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTI3LjMsMGgtMy4zdjI3LjhjMCwwLjgsMC4zLDEuNSwwLjksMi4xYzAuNiwwLjYsMS4zLDAuOCwyLjIsMC44aDMuM1YyLjljMC0wLjgtMC4zLTEuNS0wLjktMi4xQzI4LjksMC4zLDI4LjIsMCwyNy4zLDAiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNNDQsMjUuOWMzLjgsMCw1LTMuOSw1LTcuMWMwLTMuMy0xLjItNy4yLTUtNy4yYy0zLjgsMC00LjksMy45LTQuOSw3LjJDMzksMjIsNDAuMiwyNS45LDQ0LDI1Ljl6IE00NCw2LjRjNy4yLDAsMTEuMiw0LjYsMTEuMiwxMi4zYzAsNy42LTQsMTIuMi0xMS4yLDEyLjJjLTcuMywwLTExLjEtNC42LTExLjEtMTIuMkMzMi45LDExLDM2LjcsNi40LDQ0LDYuNHoiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTEuMSwyNS45Yy0zLjgsMC00LjktMy45LTQuOS03LjFjMC0zLjMsMS4xLTcuMiw0LjktNy4yYzIsMCwzLjIsMS4xLDQsMi41aDYuNmMtMS4zLTQuOS01LTcuNy0xMC42LTcuN0MzLjgsNi40LDAsMTEsMCwxOC43YzAsNy42LDMuOCwxMi4yLDExLjEsMTIuMmM1LjYsMCw5LjMtMi44LDEwLjYtNy43aC00LjNjMCwwLTEuMiwwLTEuOCwwLjZDMTQuNCwyNC45LDEzLjUsMjUuOSwxMS4xLDI1Ljl6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTc3LjgsNy45Qzc3LjIsNy4zLDc2LjQsNyw3NS41LDdoLTMuMnYxNC44YzAsMS40LTAuNCwyLjQtMS4zLDMuMWMtMC45LDAuNi0xLjksMS0zLDFjLTEuMSwwLTIuMS0wLjMtMy0xYy0wLjktMC42LTEuMy0xLjctMS4zLTMuMVYxMGMwLTAuOC0wLjMtMS41LTAuOS0yLjFDNjIuNCw3LjMsNjEuNiw3LDYwLjcsN2gtMy4ydjEzLjhjMCw0LjIsMS4yLDYuOCwzLjQsOC4yYzIuMSwxLjQsNC41LDEuOSw3LjIsMS45YzIuNywwLDUtMC41LDcuMi0xLjljMi4yLTEuNCwzLjQtNCwzLjQtOC4yVjEwQzc4LjYsOS4xLDc4LjMsOC40LDc3LjgsNy45eiIvPjxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xMDIuOSwwLjhjLTAuNi0wLjYtMS4zLTAuOC0yLjItMC44aC0zLjJ2OC44Yy0xLTAuOS0zLTIuNC02LjEtMi40Yy02LjUsMC0xMC4yLDQuNi0xMC4yLDEyLjNjMCw3LjYsMy45LDEyLjIsMTEuMywxMi4yYzcuMywwLDExLjMtNC41LDExLjMtMTIuMWgwVjIuOUMxMDMuOCwyLjEsMTAzLjUsMS40LDEwMi45LDAuOHogTTkyLjQsMjUuOWMtMy44LDAtNS0zLjktNS03LjFjMC0zLjMsMS4yLTcuMiw1LTcuMmMzLjgsMCw1LDMuOSw1LjEsNy4xdjAuMWgwQzk3LjUsMjIsOTYuMywyNS45LDkyLjQsMjUuOXoiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTI4LjQsMTcuM2MwLDAuNS0wLjEsMS0wLjMsMS40Yy0wLjEsMC4zLTAuMywwLjUtMC41LDAuN2MtMC42LDAuNi0xLjMsMC45LTIuMSwwLjloLTEyLjljMC4yLDIuOCwxLjYsNS42LDQuOCw1LjZjMi40LDAsMy4zLTEsNC40LTJjMC43LTAuNiwxLjgtMC42LDEuOC0wLjZoNC4zYy0xLjMsNC45LTUsNy43LTEwLjYsNy43Yy03LjMsMC0xMS4xLTQuNi0xMS4xLTEyLjJjMC03LjcsMy44LTEyLjMsMTEuMS0xMi4zYzUuNiwwLDkuMywyLjgsMTAuNiw3LjdjMC4yLDAuOSwwLjQsMS44LDAuNSwyLjhMMTI4LjQsMTcuM3ogTTExNy4zLDExLjZjLTIuNiwwLTQuNCwxLjktNC42LDQuMWg5LjJDMTIxLjksMTMuNSwxMTkuOCwxMS42LDExNy4zLDExLjZ6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTE2Ni4zLDEzYzAtMi4xLTAuOS0zLjctMi42LTQuOWMtMS43LTEuMS00LjItMS43LTcuNi0xLjdjLTMsMC01LjQsMC43LTcsMmMtMS41LDEuMi0yLjMsMi44LTIuNiw0LjZoNi4xYzAuMy0wLjcsMC44LTEuMiwxLjUtMS40YzAuNy0wLjIsMS40LTAuNCwyLjMtMC40YzEuMSwwLDEuOCwwLjEsMi42LDAuNGMwLjksMC4zLDEuNCwwLjgsMS40LDEuN2MwLDAuOS0xLjMsMS44LTQsMi4xYy0zLjIsMC40LTUuNywwLjctOCwyLjRjLTEuNSwxLjEtMi40LDMtMi40LDUuNGMwLDIuNiwwLjgsNC41LDIuNSw1LjZjMS40LDEsMy44LDEuOSw3LjYsMS45YzMuNCwwLDUuOS0wLjcsNy42LTEuOGMxLjgtMS4yLDIuNy0yLjUsMi44LTVWMTN6IE0xNTkuNCwyNC41Yy0xLDAuOS0yLjMsMS40LTQsMS40Yy0wLjUsMC0yLjItMC4xLTIuOS0wLjhjLTAuNS0wLjUtMC44LTEtMC44LTEuOGMwLTAuNiwwLjItMS4yLDAuNi0xLjZjMC45LTAuOSwxLjktMS4xLDQtMS41YzEuNC0wLjMsMy4xLTAuOCw0LTEuM3YxLjhDMTYwLjQsMjIuMywxNjAuNCwyMy42LDE1OS40LDI0LjV6Ii8+PC9nPjwvZz48L2c+PC9nPjwvc3ZnPg=="></div><div class="horizontal-bar"></div><div class="title-bar"><h1>iPerf3 Network Benchmark Results</h1><P><U style="padding-left: 50px">Parameters:</U></P><P style="padding-left: 50px; font-family: courier">Start time: 2018-03-06 14:34:35<BR>iperf3 server cmd: iperf3 -t 10 -P 5 -4 -p 5201 -i 0 -J -c<BR>iperf3 client cmd: iperf3 -s -1 -i 0 -p 5201<BR>max bandwidth: 20 Gbit/sec<BR></P></div>
+<!-- Result table below -->
+<table class="result">
+<tr><th>Values in Gbit/sec</th>
+<th class="rotate"><div>10.5.133.221</div></th>
+<th class="rotate"><div>10.5.133.222</div></th>
+<th class="rotate"><div>10.5.133.223</div></th>
+<th class="rotate"><div>10.5.133.224</div></th>
+<th class="rotate"><div>10.5.133.225</div></th>
+<th class="rotate"><div>10.5.133.226</div></th>
+<th class="rotate"><div>10.5.133.227</div></th>
+<th class="rotate"><div>10.5.133.228</div></th>
+<th class="rotate"><div>10.5.133.229</div></th>
+<th class="rotate"><div>10.5.133.230</div></th>
+<th class="rotate"><div>10.5.133.231</div></th>
+<th class="rotate"><div>10.5.133.232</div></th>
+<th class="rotate"><div>10.5.133.233</div></th>
+<th class="rotate"><div>10.5.133.234</div></th>
+<th class="rotate"><div>10.5.133.235</div></th>
+<th class="rotate"><div>10.5.133.236</div></th>
+<th class="rotate"><div>10.5.133.237</div></th>
+<th class="rotate"><div>10.5.133.238</div></th>
+<th class="rotate"><div>10.5.133.239</div></th>
+<th class="rotate"><div>10.5.133.240</div></th>
+<th class="rotate"><div>10.5.133.241</div></th>
+<th class="rotate"><div>10.5.133.242</div></th>
+<th class="rotate"><div>10.5.133.243</div></th>
+</tr>
+<tr><td class="header">10.5.133.221</td>
+<td class="gray"></td><td class="green">18.47</td><td class="green">18.5</td><td class="green">18.52</td><td class="green">18.48</td><td class="green">18.49</td><td class="green">18.51</td><td class="green">18.43</td><td class="green">18.48</td><td class="green">18.43</td><td class="green">18.46</td><td class="green">18.46</td><td class="green">18.43</td><td class="green">18.44</td><td class="green">18.47</td><td class="green">18.46</td><td class="green">18.34</td><td class="green">18.46</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.45</td></td></tr>
+<tr><td class="header">10.5.133.222</td>
+<td class="green">17.94</td><td class="gray"></td><td class="yellow">15.69</td><td class="green">18.4</td><td class="green">18.01</td><td class="green">17.61</td><td class="green">18.47</td><td class="green">18.37</td><td class="green">18.41</td><td class="green">18.36</td><td class="green">18.41</td><td class="green">18.36</td><td class="green">18.36</td><td class="green">18.42</td><td class="green">18.44</td><td class="green">18.35</td><td class="green">18.3</td><td class="green">18.36</td><td class="yellow">13.09</td><td class="green">17.28</td><td class="green">17.61</td><td class="green">17.66</td><td class="green">16.21</td></td></tr>
+<tr><td class="header">10.5.133.223</td>
+<td class="green">18.5</td><td class="green">18.44</td><td class="gray"></td><td class="green">18.49</td><td class="green">18.44</td><td class="green">18.46</td><td class="green">18.49</td><td class="green">18.5</td><td class="green">18.46</td><td class="green">18.43</td><td class="green">18.47</td><td class="green">18.4</td><td class="green">18.44</td><td class="green">18.33</td><td class="green">18.25</td><td class="green">18.3</td><td class="green">18.0</td><td class="green">18.33</td><td class="green">18.39</td><td class="green">18.37</td><td class="green">18.35</td><td class="green">18.44</td><td class="green">18.41</td></td></tr>
+<tr><td class="header">10.5.133.224</td>
+<td class="green">16.73</td><td class="green">18.35</td><td class="green">18.45</td><td class="gray"></td><td class="green">18.47</td><td class="green">18.5</td><td class="green">18.45</td><td class="green">18.4</td><td class="green">18.42</td><td class="green">17.86</td><td class="green">18.36</td><td class="green">18.36</td><td class="green">18.43</td><td class="green">18.45</td><td class="green">18.41</td><td class="green">18.41</td><td class="green">18.44</td><td class="green">18.36</td><td class="green">18.35</td><td class="yellow">15.7</td><td class="green">18.21</td><td class="green">18.45</td><td class="green">18.45</td></td></tr>
+<tr><td class="header">10.5.133.225</td>
+<td class="green">18.48</td><td class="green">18.42</td><td class="green">18.5</td><td class="green">18.26</td><td class="gray"></td><td class="green">17.94</td><td class="green">18.08</td><td class="green">18.52</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.22</td><td class="yellow">15.31</td><td class="green">18.38</td><td class="green">18.4</td><td class="green">18.41</td><td class="green">18.35</td><td class="green">18.43</td><td class="green">18.38</td><td class="green">18.45</td><td class="green">18.4</td><td class="green">18.38</td><td class="green">18.4</td><td class="green">18.43</td></td></tr>
+<tr><td class="header">10.5.133.226</td>
+<td class="green">18.46</td><td class="green">18.44</td><td class="yellow">15.8</td><td class="green">17.52</td><td class="green">18.03</td><td class="gray"></td><td class="green">17.54</td><td class="green">18.36</td><td class="yellow">13.11</td><td class="green">18.4</td><td class="green">18.46</td><td class="green">18.39</td><td class="green">18.46</td><td class="green">18.42</td><td class="green">18.41</td><td class="green">18.43</td><td class="green">18.44</td><td class="green">18.39</td><td class="green">18.47</td><td class="green">18.41</td><td class="green">18.29</td><td class="green">18.45</td><td class="green">18.32</td></td></tr>
+<tr><td class="header">10.5.133.227</td>
+<td class="green">18.41</td><td class="green">16.33</td><td class="green">18.45</td><td class="green">18.33</td><td class="green">18.47</td><td class="green">18.42</td><td class="gray"></td><td class="green">18.49</td><td class="green">18.48</td><td class="green">18.23</td><td class="green">18.42</td><td class="green">18.43</td><td class="green">18.33</td><td class="green">18.37</td><td class="green">18.45</td><td class="green">18.42</td><td class="green">18.43</td><td class="green">16.67</td><td class="green">18.12</td><td class="green">18.28</td><td class="green">18.47</td><td class="yellow">15.67</td><td class="green">18.45</td></td></tr>
+<tr><td class="header">10.5.133.228</td>
+<td class="green">18.02</td><td class="green">17.57</td><td class="green">17.84</td><td class="green">18.42</td><td class="green">18.48</td><td class="green">18.06</td><td class="green">18.38</td><td class="gray"></td><td class="green">18.51</td><td class="green">18.4</td><td class="green">18.43</td><td class="green">18.38</td><td class="green">18.44</td><td class="green">18.34</td><td class="green">18.43</td><td class="green">18.4</td><td class="green">18.38</td><td class="green">18.47</td><td class="green">16.43</td><td class="green">18.43</td><td class="green">18.44</td><td class="green">18.27</td><td class="green">18.38</td></td></tr>
+<tr><td class="header">10.5.133.229</td>
+<td class="green">18.5</td><td class="green">18.5</td><td class="green">18.47</td><td class="green">18.48</td><td class="green">18.42</td><td class="green">18.46</td><td class="green">18.41</td><td class="green">18.42</td><td class="gray"></td><td class="green">18.39</td><td class="green">18.43</td><td class="green">18.44</td><td class="green">18.45</td><td class="green">17.71</td><td class="green">18.45</td><td class="green">18.43</td><td class="green">18.28</td><td class="green">17.85</td><td class="green">17.16</td><td class="green">18.46</td><td class="green">18.47</td><td class="green">18.39</td><td class="green">18.43</td></td></tr>
+<tr><td class="header">10.5.133.230</td>
+<td class="green">18.41</td><td class="green">18.4</td><td class="green">18.45</td><td class="green">18.46</td><td class="green">18.45</td><td class="green">18.37</td><td class="green">18.4</td><td class="green">18.42</td><td class="green">18.44</td><td class="gray"></td><td class="green">18.5</td><td class="green">18.45</td><td class="green">18.47</td><td class="green">18.43</td><td class="green">18.47</td><td class="green">18.44</td><td class="green">18.45</td><td class="green">18.43</td><td class="green">18.49</td><td class="green">18.4</td><td class="green">18.4</td><td class="green">18.48</td><td class="green">18.39</td></td></tr>
+<tr><td class="header">10.5.133.231</td>
+<td class="green">18.44</td><td class="green">18.48</td><td class="green">18.41</td><td class="green">18.41</td><td class="green">18.41</td><td class="green">18.42</td><td class="green">18.48</td><td class="green">18.44</td><td class="green">18.42</td><td class="green">18.44</td><td class="gray"></td><td class="green">18.48</td><td class="green">18.47</td><td class="green">18.49</td><td class="green">18.5</td><td class="green">18.43</td><td class="green">18.48</td><td class="green">18.51</td><td class="green">18.5</td><td class="green">18.4</td><td class="green">18.42</td><td class="green">18.43</td><td class="green">18.49</td></td></tr>
+<tr><td class="header">10.5.133.232</td>
+<td class="green">17.36</td><td class="green">18.46</td><td class="green">18.44</td><td class="green">18.42</td><td class="green">18.43</td><td class="green">18.43</td><td class="green">18.4</td><td class="green">18.41</td><td class="green">18.4</td><td class="green">18.48</td><td class="green">18.47</td><td class="gray"></td><td class="green">18.48</td><td class="green">18.49</td><td class="green">18.48</td><td class="green">18.38</td><td class="green">17.52</td><td class="green">17.7</td><td class="green">18.43</td><td class="green">18.33</td><td class="green">18.44</td><td class="green">18.34</td><td class="green">18.28</td></td></tr>
+<tr><td class="header">10.5.133.233</td>
+<td class="green">18.43</td><td class="green">18.4</td><td class="green">18.2</td><td class="green">18.24</td><td class="green">18.11</td><td class="green">18.29</td><td class="green">18.36</td><td class="green">18.42</td><td class="green">16.37</td><td class="green">17.62</td><td class="yellow">15.17</td><td class="green">17.05</td><td class="gray"></td><td class="green">16.48</td><td class="yellow">15.88</td><td class="green">18.45</td><td class="green">18.44</td><td class="green">18.47</td><td class="green">18.46</td><td class="green">18.43</td><td class="green">17.42</td><td class="green">18.08</td><td class="green">18.48</td></td></tr>
+<tr><td class="header">10.5.133.234</td>
+<td class="green">18.41</td><td class="green">18.45</td><td class="green">18.43</td><td class="green">18.45</td><td class="green">18.47</td><td class="green">18.46</td><td class="green">18.45</td><td class="green">18.43</td><td class="green">18.43</td><td class="green">18.49</td><td class="green">18.51</td><td class="green">18.45</td><td class="green">18.46</td><td class="gray"></td><td class="green">18.5</td><td class="green">18.46</td><td class="green">18.47</td><td class="green">18.5</td><td class="green">18.47</td><td class="green">18.4</td><td class="green">18.41</td><td class="green">18.5</td><td class="green">18.5</td></td></tr>
+<tr><td class="header">10.5.133.235</td>
+<td class="green">18.43</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.47</td><td class="green">18.44</td><td class="green">18.47</td><td class="green">18.48</td><td class="green">18.43</td><td class="green">18.46</td><td class="green">18.49</td><td class="green">18.53</td><td class="green">18.36</td><td class="green">18.5</td><td class="green">18.5</td><td class="gray"></td><td class="green">18.24</td><td class="green">18.49</td><td class="green">18.5</td><td class="green">18.49</td><td class="green">18.36</td><td class="green">18.43</td><td class="green">18.48</td><td class="green">18.48</td></td></tr>
+<tr><td class="header">10.5.133.236</td>
+<td class="green">18.44</td><td class="green">18.46</td><td class="green">18.47</td><td class="green">18.4</td><td class="green">18.47</td><td class="green">18.44</td><td class="green">18.43</td><td class="green">18.4</td><td class="green">18.45</td><td class="green">18.43</td><td class="green">18.44</td><td class="green">18.48</td><td class="green">18.41</td><td class="green">18.47</td><td class="yellow">14.36</td><td class="gray"></td><td class="green">18.05</td><td class="green">18.42</td><td class="green">18.39</td><td class="green">18.32</td><td class="green">18.26</td><td class="green">18.43</td><td class="green">18.42</td></td></tr>
+<tr><td class="header">10.5.133.237</td>
+<td class="green">18.48</td><td class="green">18.42</td><td class="green">18.4</td><td class="green">18.42</td><td class="green">18.43</td><td class="green">18.37</td><td class="green">18.46</td><td class="green">16.5</td><td class="green">17.46</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.49</td><td class="green">18.47</td><td class="green">18.48</td><td class="green">18.47</td><td class="green">18.42</td><td class="gray"></td><td class="green">18.47</td><td class="green">18.45</td><td class="green">18.44</td><td class="green">18.34</td><td class="green">18.47</td><td class="green">18.49</td></td></tr>
+<tr><td class="header">10.5.133.238</td>
+<td class="green">18.43</td><td class="green">18.39</td><td class="green">18.43</td><td class="green">18.45</td><td class="green">18.48</td><td class="green">18.45</td><td class="green">18.38</td><td class="green">18.4</td><td class="green">18.41</td><td class="green">18.5</td><td class="green">18.49</td><td class="green">18.44</td><td class="green">18.45</td><td class="green">18.47</td><td class="green">18.5</td><td class="green">18.45</td><td class="green">18.48</td><td class="gray"></td><td class="green">18.51</td><td class="green">18.41</td><td class="green">18.37</td><td class="green">18.44</td><td class="green">18.4</td></td></tr>
+<tr><td class="header">10.5.133.239</td>
+<td class="green">18.37</td><td class="green">18.39</td><td class="green">18.45</td><td class="green">18.48</td><td class="green">18.43</td><td class="green">18.31</td><td class="green">18.45</td><td class="green">18.42</td><td class="green">18.41</td><td class="green">18.45</td><td class="green">18.42</td><td class="green">18.43</td><td class="green">18.46</td><td class="green">18.44</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.48</td><td class="green">18.43</td><td class="gray"></td><td class="green">18.39</td><td class="green">18.46</td><td class="green">18.44</td><td class="green">18.47</td></td></tr>
+<tr><td class="header">10.5.133.240</td>
+<td class="green">18.47</td><td class="green">18.44</td><td class="green">18.42</td><td class="green">18.3</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.45</td><td class="green">18.33</td><td class="green">18.21</td><td class="green">18.41</td><td class="green">18.43</td><td class="green">18.39</td><td class="green">18.43</td><td class="green">18.41</td><td class="green">18.39</td><td class="green">18.43</td><td class="green">18.35</td><td class="green">18.35</td><td class="green">18.4</td><td class="gray"></td><td class="green">18.43</td><td class="green">18.36</td><td class="green">18.4</td></td></tr>
+<tr><td class="header">10.5.133.241</td>
+<td class="green">18.45</td><td class="green">18.02</td><td class="green">18.39</td><td class="green">18.41</td><td class="green">18.42</td><td class="green">18.36</td><td class="green">18.45</td><td class="green">18.46</td><td class="green">17.97</td><td class="green">18.36</td><td class="green">18.44</td><td class="green">18.44</td><td class="green">18.43</td><td class="green">18.36</td><td class="green">18.42</td><td class="green">17.69</td><td class="green">18.39</td><td class="yellow">13.23</td><td class="green">18.4</td><td class="green">16.44</td><td class="gray"></td><td class="green">18.45</td><td class="green">18.39</td></td></tr>
+<tr><td class="header">10.5.133.242</td>
+<td class="green">18.42</td><td class="green">18.42</td><td class="green">18.34</td><td class="green">18.34</td><td class="green">18.39</td><td class="green">17.81</td><td class="green">17.75</td><td class="green">18.44</td><td class="green">18.39</td><td class="green">18.35</td><td class="green">18.43</td><td class="green">18.39</td><td class="green">17.85</td><td class="green">17.63</td><td class="green">17.46</td><td class="green">18.41</td><td class="green">18.24</td><td class="green">18.44</td><td class="green">18.41</td><td class="green">18.41</td><td class="green">18.37</td><td class="gray"></td><td class="green">18.48</td></td></tr>
+<tr><td class="header">10.5.133.243</td>
+<td class="green">18.43</td><td class="green">18.47</td><td class="green">18.38</td><td class="green">18.42</td><td class="green">17.67</td><td class="green">18.42</td><td class="green">18.47</td><td class="green">18.4</td><td class="green">18.43</td><td class="green">18.45</td><td class="green">18.49</td><td class="green">18.46</td><td class="green">17.91</td><td class="green">18.45</td><td class="green">18.49</td><td class="green">18.45</td><td class="green">18.49</td><td class="green">18.5</td><td class="green">18.49</td><td class="green">18.42</td><td class="green">18.42</td><td class="green">18.45</td><td class="gray"></td></td></tr>
+</table>
+<div><table class="legend">
+    <tr><td colspan="2"><p>Legend</p></td></tr>
+<tr>
+    <td><div style="padding: 5px; margin: 1px; background-color: #99FF99"></div></td>
+	 <td class="legend">Throughput &ge; 80% of max</td>
+</tr>
+<tr>
+	<td><div style="padding: 5px; margin: 1px; background-color: #FFFF99"></td>
+	<td class="legend">Throughput &ge; 60% of max</td>
+</tr>
+<tr>
+	<td><div style="padding: 5px; margin: 1px; background-color: #ff6666"></td>
+	<td class="legend">Throughput < 60% of max</td>
+</tr></table></div>
+<P></P>
+</body></html>

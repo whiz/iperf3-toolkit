@@ -1,0 +1,5 @@
+{
+    "start_time" : "2018-03-06 14:34:35",
+    "iperf_server_cmd" : "iperf3 -s -1 -i 0 -p 5201",
+    "iperf_client_cmd" : "iperf3 -t 10 -P 5 -4 -p 5201 -i 0 -J -c <SERVER>"
+}
