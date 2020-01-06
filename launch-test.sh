@@ -75,9 +75,9 @@ function cleanup {
     else
             echo ""
             echo "Terminating script... stopping tests"
-            echo "Cleaning up iperf3 process on $SERVER"
-            ssh "$OPT_USER@$SERVER" "ps aux | grep 'iperf3' | awk '{print \$2}' | xargs kill" > /dev/null 2>&1
-            kill SSH_PID > /dev/null 2>&1
+
+            # kill all background ssh processes that did not terminate gracefully
+            kill $(jobs -p) > /dev/null 2>&1
     fi
     }
 
@@ -230,11 +230,11 @@ for i in "${!HOSTS[@]}"; do
                         info "Testing throughput from $CLIENT -> $SERVER"
                         OUTFILE="$RESULTDIR/$CLIENT.json"
 
-                        ssh "$OPT_USER@$SERVER" "$CMD_IPERF_SERVER" > /dev/null 2>&1 &
+                        ssh -t -t "$OPT_USER@$SERVER" "$CMD_IPERF_SERVER" > /dev/null 2>&1 &
                         sleep 5 #give some time for the server process to load
 
                         clientcmd="$CMD_IPERF_CLIENT $SERVER"
-                        ssh "$OPT_USER@$CLIENT" "$clientcmd" >> "$OUTFILE"
+                        ssh -t -t "$OPT_USER@$CLIENT" "$clientcmd" >> "$OUTFILE"
                 fi
         done
 done
