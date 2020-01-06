@@ -123,16 +123,16 @@ function usage() {
     echo "  $(tput bold)-t, --time $(tput sgr0)<arg>"
     echo "        Time in seconds to transmit for (default 10 secs)."
     echo
-    echo "$(tput bold)CLOUDERA MANAGER OPTIONS:$(tput sgr0)"
-    echo "  $(tput bold)--cmurl $(tput sgr0)<arg>"
-    echo "        Cloudera Manager URL (e.g. http://cm-mycluster.com:7180)."
-    echo
-    echo "  $(tput bold)--cmuser $(tput sgr0)<arg>"
-    echo "        Cloudera Manager username."
-    echo
-    echo "  $(tput bold)--cmpassword $(tput sgr0)<arg>"
-    echo "        Cloudera Manager user password."
-    echo
+#    echo "$(tput bold)CLOUDERA MANAGER OPTIONS:$(tput sgr0)"
+#    echo "  $(tput bold)--cmurl $(tput sgr0)<arg>"
+#    echo "        Cloudera Manager URL (e.g. http://cm-mycluster.com:7180)."
+#    echo
+#    echo "  $(tput bold)--cmuser $(tput sgr0)<arg>"
+#    echo "        Cloudera Manager username."
+#    echo
+#    echo "  $(tput bold)--cmpassword $(tput sgr0)<arg>"
+#    echo "        Cloudera Manager user password."
+#    echo
     exit 1
 }
 
@@ -140,7 +140,6 @@ OPT_USER="root"     # username for passwordless ssh access
 OPT_PORT=5201       # port server will listen on
 OPT_THREADS=5       # number of parallel client threads sending data
 OPT_DURATION=10     # duration of transmitting data
-OPT_HOSTFILE="hosts.lst"
 
 HOSTS=()
 
@@ -157,9 +156,9 @@ while [[ $# -gt 0 ]]; do
         -u|--sshuser)       OPT_USER="$1";          shift;;
         -p|--port)          OPT_PORT="$1";          shift;;
         -t|--time)          OPT_DURATION="$1";      shift;;
-        --cmurl)            OPT_CMURL="$1";         shift;;
-        --cmuser)           OPT_CMUSER="$1";        shift;;
-	--cmpassword)       OPT_CMPASSWORD="$1";    shift;;
+#        --cmurl)            OPT_CMURL="$1";         shift;;
+#        --cmuser)           OPT_CMUSER="$1";        shift;;
+#        --cmpassword)       OPT_CMPASSWORD="$1";    shift;;
         --help)             OPT_USAGE=true;;
         *)                  OPT_USAGE=true
                             err "Unknown option: ${KEY}"
@@ -169,7 +168,7 @@ done
 
 
 if [ -z "${OPT_HOSTFILE}" ] && [ -z "${OPT_CMURL}" ]; then
-    die "Please specify a hostfile or Cloudera Manager URL."
+    die "Please specify a hostfile." # or Cloudera Manager URL."
 fi
 
 if ! [ -z "${OPT_CMURL}" ]; then
@@ -198,11 +197,13 @@ CMD_IPERF_SERVER="iperf3 -s -1 -i 0 -p $OPT_PORT"
 CMD_IPERF_CLIENT="iperf3 -t $OPT_DURATION -P $OPT_THREADS -4 -p $OPT_PORT -i 0 -J -c "
 COMPLETED=0
 
-OUTPUTDIR="RESULTS-"$(date -d"${STARTTIME}" "+%y%m%d-%H%M%S")
+OUTPUTDIR="/tmp/"$$TMP
 
 if [ ! -d "$OUTPUTDIR" ]; then
         mkdir "$OUTPUTDIR"
 fi
+
+info "Saving iperf3 results to temp directory $OUTPUTDIR"
 
 write_summary
 
@@ -214,33 +215,40 @@ CLIENT=""
 for i in "${!HOSTS[@]}"; do
 
         SERVER="${HOSTS[$i]}"
-        OUTFILE="$OUTPUTDIR/$SERVER.json"
-        echo "[" > "$OUTFILE"
+        RESULTDIR="$OUTPUTDIR/$SERVER"
+        mkdir -p $RESULTDIR > /dev/null 2>&1
 
         info "===== Staring iperf3 server on $SERVER ====="
 
         for j in "${!HOSTS[@]}"; do
                 CLIENT="${HOSTS[$j]}"
 
+                OUTFILE="$RESULTDIR/$CLIENT.json"
+		touch $OUTFILE
+
                 if [ "$SERVER" != "$CLIENT" ]; then
                         info "Testing throughput from $CLIENT -> $SERVER"
+                        OUTFILE="$RESULTDIR/$CLIENT.json"
 
                         ssh "$OPT_USER@$SERVER" "$CMD_IPERF_SERVER" > /dev/null 2>&1 &
-
                         sleep 5 #give some time for the server process to load
-
-                        echo "{ \"client\": \"$CLIENT\"," >> "$OUTFILE"
-                        echo "  \"result\":" >> "$OUTFILE"
 
                         clientcmd="$CMD_IPERF_CLIENT $SERVER"
                         ssh "$OPT_USER@$CLIENT" "$clientcmd" >> "$OUTFILE"
-			echo "}," >> "$OUTFILE"
                 fi
         done
-        echo "]" >> "$OUTFILE"
 done
 
-# Post-processing - remove last comma from each result json files
-for FILE in "$OUTPUTDIR/*.json"; do
-	sed -i 'x;${s/,$//;p;x;};1d' $FILE
-done
+# Zip up the results and save to current working directory
+FILE_SUFFIX=$(date -d"${STARTTIME}" "+%y%m%d-%H%M%S")
+FILE=iperfresults-$FILE_SUFFIX.tgz
+
+pushd $OUTPUTDIR > /dev/null
+tar czf $FILE *
+popd > /dev/null
+mv $OUTPUTDIR/$FILE .
+
+rm -fr $OUTPUTDIR > /dev/null
+
+info "Test results zipped as iperfresults-$STARTTIME.tgz"
+info "iperf3 tests completed."
