@@ -82,4 +82,4 @@ Download the RPM from [https://iperf.fr/iperf-download.php]().
 
 ## HTML Sample Result Output
 
-![Sample result in HTML](help/iperf3_sample.png =1470x1288)
+![Sample result in HTML](help/iperf3_sample.png){:height="1470px" width="1288px"}
