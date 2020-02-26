@@ -78,6 +78,9 @@ function cleanup {
 
             # kill all background ssh processes that did not terminate gracefully
             kill $(jobs -p) > /dev/null 2>&1
+
+            # clean up result tmp dir
+            rm -r $OUTPUTDIR > /dev/null 2>&1
     fi
     }
 
@@ -234,7 +237,10 @@ for i in "${!HOSTS[@]}"; do
                         sleep 5 #give some time for the server process to load
 
                         clientcmd="$CMD_IPERF_CLIENT $SERVER"
-                        ssh -t -t "$OPT_USER@$CLIENT" "$clientcmd" >> "$OUTFILE"
+                        echo "{ \"client\": \"$CLIENT\"," >> "$OUTFILE"
+                        echo "  \"result\":" >> "$OUTFILE"
+                        ssh -t -t "$OPT_USER@$CLIENT" "$clientcmd" >> "$OUTFILE" 2> /dev/null
+                        echo "}" >> "$OUTFILE"
                 fi
         done
 done
