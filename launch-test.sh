@@ -21,7 +21,7 @@
 # You are responsible for reviewing and testing any scripts you run thoroughly
 # before use in any non-testing environment.
 
-VERSION=1.0
+VERSION=2.0
 
 function info() {
     echo "$(date) [$(tput setaf 2)INFO $(tput sgr0)] $*"
