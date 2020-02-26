@@ -29,18 +29,28 @@ import argparse
 import cgi
 import socket
 
-def process_json(file):
+def untar_results(file):
+    import tempfile, tarfile
+    tmpdir = tempfile.mkdtemp()
+
+    print("Extracting results to " + tmpdir)
+    tf = tarfile.open(file)
+    tf.extractall(tmpdir)
+
+    return tmpdir
+
+def process_json(server, client, file):    
+    if not server in bw_array:
+        bw_array[server] = {}
+
     with open(file) as json_file:
-        json_data = json.load(json_file)
+        try:
+            json_data = json.load(json_file)
+            bwresults = {"received": json_data["result"]["end"]["sum_received"], "sent": json_data["result"]["end"]["sum_sent"]}
+            bw_array[server][client] = bwresults
 
-        server = json_data[0]["result"]["start"]["connecting_to"]["host"]
-        row = {}
-        for element in json_data:
-            bwresults = {"received": element["result"]["end"]["sum_received"], "sent": element["result"]["end"]["sum_sent"]}
-            client = element["client"]
-            row[client] = bwresults
-
-        bw_array[server] = row
+        except ValueError as e:
+            bw_array[server][client] = {"error": str(e)}
 
 def process_summary(file):
     if os.path.isfile(file):
@@ -78,7 +88,8 @@ def output_html():
         "td.green  { background-color: #99FF99; }",
         "td.gray   { background-color: #f2f2f2; }",
         "td.yellow { background-color: #FFFF99; }",
-        "td.red    { background-color: #FF6666; }", "",
+        "td.red    { background-color: #FF6666; }",
+        "td.error  { background-color: #FF6666; font-size: 10px; font-weight: bold; }",
         "table.result {",
         "    border: 2px solid LightGray;",
         "    border-spacing: 0;",
@@ -124,7 +135,7 @@ def output_html():
         "    border-top: 1px solid LightGray;",
         "    border-bottom: 1px solid LightGray;",
         "    min-height: 10px;",
-        "    background-color: #0078D9;",
+        "    background-color: #305673;",
         "}",
         "div.title-bar {",
         "margin: 0px;",
@@ -151,46 +162,47 @@ def output_html():
 
     BANNER = (
         "<div class=\"top-banner\">",
-        "<img alt=\"Cloudera Logo\" style=\"height: 20px; margin-top: 15px; margin-left: 10px\" src=\"data:image/svg+xml",
-        ";charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyX",
-        "zEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9",
-        "IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTc1IDMxLjMiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDE3NSAzMS4zOyIgeG1",
-        "sOnNwYWNlPSJwcmVzZXJ2ZSI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4uc3Qwe2ZpbGw6IzAwNTg4NDt9LnN0MXtmaWxsOiMwMDU4ODI7fS5zdD",
-        "J7ZmlsbDojMDBBN0UwO308L3N0eWxlPjxnPjxnPjxnPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNzAuMyw2LjljMS41LDAsMi40LDEuMSwyLjQsM",
-        "i40YzAsMS4zLTEsMi40LTIuNCwyLjRjLTEuNSwwLTIuNC0xLjEtMi40LTIuNEMxNjcuOCw4LDE2OC44LDYuOSwxNzAuMyw2Ljl6TTE3MC4zLDEx",
-        "LjRjMS4yLDAsMi0wLjksMi0yYzAtMS4xLTAuOS0yLjEtMi0yLjFjLTEuMiwwLTIsMC45LTIsMi4xQzE2OC4yLDEwLjUsMTY5LjEsMTEuNCwxNzA",
-        "uMywxMS40eiBNMTcwLjMsOS43aC0wLjV2MS4xaC0wLjVWOGgxYzAuNywwLDEuMSwwLjIsMS4xLDAuOWMwLDAuNC0wLjEsMC43LTAuNSwwLjhsMC",
-        "41LDEuMWgtMC42TDE3MC4zLDkuN3ogTTE2OS44LDkuM2gwLjVjMC4zLDAsMC41LTAuMSwwLjUtMC40YzAtMC4zLTAuMi0wLjQtMC42LTAuNGgtM",
-        "C40VjkuM3oiLz48L2c+PGc+PGc+PHBhdGggY2xhc3M9InN0MSIgZD0iTTE0My40LDdjLTEuNiwwLTMuMiwwLjItNC44LDAuNmMtMC43LDAuMi0x",
-        "LjQsMC40LTIsMC43Yy0wLjEtMC4yLTAuMy0wLjQtMC40LTAuNUMxMzUuNiw3LjMsMTM0LjgsNywxMzQsN2gtMy4zdjIzLjdoNi40VjE4LjRjMC0",
-        "yLjQsMC40LTMuMywxLjMtNC4yYzAuOC0wLjgsMi4xLTEuMiwzLjktMS4yaDIuN1Y3SDE0My40Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTI3Lj",
-        "MsMGgtMy4zdjI3LjhjMCwwLjgsMC4zLDEuNSwwLjksMi4xYzAuNiwwLjYsMS4zLDAuOCwyLjIsMC44aDMuM1YyLjljMC0wLjgtMC4zLTEuNS0wL",
-        "jktMi4xQzI4LjksMC4zLDI4LjIsMCwyNy4zLDAiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNNDQsMjUuOWMzLjgsMCw1LTMuOSw1LTcuMWMwLTMu",
-        "My0xLjItNy4yLTUtNy4yYy0zLjgsMC00LjksMy45LTQuOSw3LjJDMzksMjIsNDAuMiwyNS45LDQ0LDI1Ljl6IE00NCw2LjRjNy4yLDAsMTEuMiw",
-        "0LjYsMTEuMiwxMi4zYzAsNy42LTQsMTIuMi0xMS4yLDEyLjJjLTcuMywwLTExLjEtNC42LTExLjEtMTIuMkMzMi45LDExLDM2LjcsNi40LDQ0LD",
-        "YuNHoiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTEuMSwyNS45Yy0zLjgsMC00LjktMy45LTQuOS03LjFjMC0zLjMsMS4xLTcuMiw0LjktNy4yY",
-        "zIsMCwzLjIsMS4xLDQsMi41aDYuNmMtMS4zLTQuOS01LTcuNy0xMC42LTcuN0MzLjgsNi40LDAsMTEsMCwxOC43YzAsNy42LDMuOCwxMi4yLDEx",
-        "LjEsMTIuMmM1LjYsMCw5LjMtMi44LDEwLjYtNy43aC00LjNjMCwwLTEuMiwwLTEuOCwwLjZDMTQuNCwyNC45LDEzLjUsMjUuOSwxMS4xLDI1Ljl",
-        "6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTc3LjgsNy45Qzc3LjIsNy4zLDc2LjQsNyw3NS41LDdoLTMuMnYxNC44YzAsMS40LTAuNCwyLjQtMS",
-        "4zLDMuMWMtMC45LDAuNi0xLjksMS0zLDFjLTEuMSwwLTIuMS0wLjMtMy0xYy0wLjktMC42LTEuMy0xLjctMS4zLTMuMVYxMGMwLTAuOC0wLjMtM",
-        "S41LTAuOS0yLjFDNjIuNCw3LjMsNjEuNiw3LDYwLjcsN2gtMy4ydjEzLjhjMCw0LjIsMS4yLDYuOCwzLjQsOC4yYzIuMSwxLjQsNC41LDEuOSw3",
-        "LjIsMS45YzIuNywwLDUtMC41LDcuMi0xLjljMi4yLTEuNCwzLjQtNCwzLjQtOC4yVjEwQzc4LjYsOS4xLDc4LjMsOC40LDc3LjgsNy45eiIvPjx",
-        "wYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xMDIuOSwwLjhjLTAuNi0wLjYtMS4zLTAuOC0yLjItMC44aC0zLjJ2OC44Yy0xLTAuOS0zLTIuNC02LjEtMi",
-        "40Yy02LjUsMC0xMC4yLDQuNi0xMC4yLDEyLjNjMCw3LjYsMy45LDEyLjIsMTEuMywxMi4yYzcuMywwLDExLjMtNC41LDExLjMtMTIuMWgwVjIuO",
-        "UMxMDMuOCwyLjEsMTAzLjUsMS40LDEwMi45LDAuOHogTTkyLjQsMjUuOWMtMy44LDAtNS0zLjktNS03LjFjMC0zLjMsMS4yLTcuMiw1LTcuMmMz",
-        "LjgsMCw1LDMuOSw1LjEsNy4xdjAuMWgwQzk3LjUsMjIsOTYuMywyNS45LDkyLjQsMjUuOXoiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTI4LjQ",
-        "sMTcuM2MwLDAuNS0wLjEsMS0wLjMsMS40Yy0wLjEsMC4zLTAuMywwLjUtMC41LDAuN2MtMC42LDAuNi0xLjMsMC45LTIuMSwwLjloLTEyLjljMC",
-        "4yLDIuOCwxLjYsNS42LDQuOCw1LjZjMi40LDAsMy4zLTEsNC40LTJjMC43LTAuNiwxLjgtMC42LDEuOC0wLjZoNC4zYy0xLjMsNC45LTUsNy43L",
-        "TEwLjYsNy43Yy03LjMsMC0xMS4xLTQuNi0xMS4xLTEyLjJjMC03LjcsMy44LTEyLjMsMTEuMS0xMi4zYzUuNiwwLDkuMywyLjgsMTAuNiw3Ljdj",
-        "MC4yLDAuOSwwLjQsMS44LDAuNSwyLjhMMTI4LjQsMTcuM3ogTTExNy4zLDExLjZjLTIuNiwwLTQuNCwxLjktNC42LDQuMWg5LjJDMTIxLjksMTM",
-        "uNSwxMTkuOCwxMS42LDExNy4zLDExLjZ6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTE2Ni4zLDEzYzAtMi4xLTAuOS0zLjctMi42LTQuOWMtMS",
-        "43LTEuMS00LjItMS43LTcuNi0xLjdjLTMsMC01LjQsMC43LTcsMmMtMS41LDEuMi0yLjMsMi44LTIuNiw0LjZoNi4xYzAuMy0wLjcsMC44LTEuM",
-        "iwxLjUtMS40YzAuNy0wLjIsMS40LTAuNCwyLjMtMC40YzEuMSwwLDEuOCwwLjEsMi42LDAuNGMwLjksMC4zLDEuNCwwLjgsMS40LDEuN2MwLDAu",
-        "OS0xLjMsMS44LTQsMi4xYy0zLjIsMC40LTUuNywwLjctOCwyLjRjLTEuNSwxLjEtMi40LDMtMi40LDUuNGMwLDIuNiwwLjgsNC41LDIuNSw1LjZ",
-        "jMS40LDEsMy44LDEuOSw3LjYsMS45YzMuNCwwLDUuOS0wLjcsNy42LTEuOGMxLjgtMS4yLDIuNy0yLjUsMi44LTVWMTN6IE0xNTkuNCwyNC41Yy",
-        "0xLDAuOS0yLjMsMS40LTQsMS40Yy0wLjUsMC0yLjItMC4xLTIuOS0wLjhjLTAuNS0wLjUtMC44LTEtMC44LTEuOGMwLTAuNiwwLjItMS4yLDAuN",
-        "i0xLjZjMC45LTAuOSwxLjktMS4xLDQtMS41YzEuNC0wLjMsMy4xLTAuOCw0LTEuM3YxLjhDMTYwLjQsMjIuMywxNjAuNCwyMy42LDE1OS40LDI0",
-        "LjV6Ii8+PC9nPjwvZz48L2c+PC9nPjwvc3ZnPg==\">",
+        "<img alt=\"Cloudera Logo\" style=\"height: 20px; margin-top: 15px; margin-left: 10px\" src=\"data:image/png",
+        ";charset=utf-8;base64,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\">",
         "</div>",
         "<div class=\"horizontal-bar\"></div>",
         "<div class=\"title-bar\"><h1>iPerf3 Network Benchmark Results</h1>",
@@ -252,6 +264,10 @@ def output_html():
         for desthost in sorted(bw_array.iterkeys()):
             if srchost == desthost:
                 outfile.writelines("<td class=\"gray\"></td>")
+
+            elif bw_array[srchost][desthost].keys()[0] == "error":
+                outfile.writelines("<td class=\"error\"> ERROR </td>")
+
             else:
                 Gbps = bw_array[srchost][desthost]["received"]["bits_per_second"] / 1000000000
                 outfile.writelines("<td class=")
@@ -273,6 +289,7 @@ def output_html():
 
     outfile.writelines("</body></html>\n")
     outfile.close()
+
 
 def handle_args():
     """Handle command line arguments, returning the options."""
@@ -297,7 +314,8 @@ def main():
     """Invoked as a main from the command line, so parse the command line arguments"""
     global parser
     parser = argparse.ArgumentParser(description="iperf3-util result parser.")
-    parser.add_argument('-d', metavar="directory", required=True, help="Directory containing the result json files.")
+    #parser.add_argument('-d', metavar="directory", required=True, help="Directory containing the result json files.")
+    parser.add_argument('-f', metavar="tarfile", required=True, help="Zipped tarball of iperf3 test results")
     parser.add_argument('-bw', metavar="bandwidth", type=int, required=True, help="Theoretical maximum bandwidth for each hosts. E.g. 20 for 20Gbps")
 
     opt=parser.parse_args()
@@ -309,22 +327,35 @@ def main():
     summary = {}
     bw_array = {}
     bw_total = opt.bw
-    directory = opt.d
+    tarfile = opt.f
 
-    if not os.path.isdir(directory):
-        sys.stderr.write("Error: directory " + directory + " not found\n")
+    if not os.path.isfile(tarfile):
+        sys.stderr.write("Error: file " + tarfile + " not found\n")
         sys.exit(2)
     else:
-        print("Processing iperf3 output in " + directory)
+        print("Processing iperf3 output tarfile " + tarfile)
+        result_dir=untar_results(tarfile)
 
-        process_summary(directory + "/summary.txt")
+        process_summary(result_dir + "/summary.txt")
 
-        files = os.listdir(directory)
-        for file in files:
-            if file.endswith(".json"):
-                srchost = os.path.splitext(file)[0]
-                process_json(directory + "/" + file)
-                output_html()
+        # Process each dir which contain iperf3 result for a node
+        dirlist = os.listdir(result_dir)
+        for src in dirlist:
+            if os.path.isdir(result_dir + "/" + src):
+                print("Processing result for " + src)
+                jsonlist = os.listdir(result_dir + "/" + src)
+
+                for file in jsonlist:
+                    if file.endswith(".json"):
+                        print("Processing json " + file)
+                        process_json(src, os.path.splitext(file)[0],result_dir + "/" + src + "/" + file)
+
+        output_html()
+        
+        # clean up the temp directory
+        import shutil
+        shutil.rmtree(result_dir)
+        print("Removed temp directory " + result_dir)
 
 
 if __name__ == "__main__":
