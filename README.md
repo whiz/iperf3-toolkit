@@ -13,7 +13,7 @@ Utility scripts that use iperf3 to test the cluster network bandwidth. There are
 This is a iperf3 launcher script that is written in bash. It helps to automate the executation if the iperf3 server and client to each of the nodes in the cluster and collect the results in JSON format.
 
 ```
-IPERF Cluster Network Benchmark Utility v
+IPERF Cluster Network Benchmark Utility v2.0
 
 USAGE:
   ./launch-test.sh [OPTIONS]
